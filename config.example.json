@@ -1,0 +1,54 @@
+{
+  "grafana": {
+    "base_url": "https://grafana.example.com",
+    "login_path": "/login",
+    "username_env": "GRAFANA_USERNAME",
+    "password_env": "GRAFANA_PASSWORD",
+    "org_id": 1,
+    "theme": "dark",
+    "kiosk": true,
+    "timezone": "Asia/Jakarta",
+    "viewport": {
+      "width": 3440,
+      "height": 1220
+    },
+    "full_page": true,
+    "wait_seconds": 8,
+    "ignore_https_errors": false
+  },
+  "output": {
+    "root": "D:/GrafanaReports",
+    "folder_template": "{year}/{month_number}. {month_name}/{site}/{group}/{category}/{name}",
+    "overwrite": true
+  },
+  "periods": {
+    "target_month": "previous",
+    "weekly_mode": "four_blocks"
+  },
+  "schedule": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "monthly": {
+      "enabled": true,
+      "day": 1,
+      "time": "07:30",
+      "capture": "previous_month",
+      "include_weeklies": true
+    },
+    "weekly": {
+      "enabled": false,
+      "day": "monday",
+      "time": "07:00",
+      "capture": "previous_7_days"
+    }
+  },
+  "dashboards": [
+    {
+      "name": "vm-talend-adm-center",
+      "site": "Alibaba",
+      "group": "Centralized",
+      "category": "VM-Linux",
+      "url": "/d/YOUR_DASHBOARD_UID/YOUR_DASHBOARD_SLUG?var-Hostname=vm-talend-adm-center"
+    }
+  ]
+}

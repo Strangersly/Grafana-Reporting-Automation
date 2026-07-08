@@ -1,0 +1,12 @@
+config.json
+.grafana-auth-state.json
+.venv/
+__pycache__/
+*.pyc
+reports/
+.env
+.env.local
+.agents/
+.codex/
+.venv-1/
+
