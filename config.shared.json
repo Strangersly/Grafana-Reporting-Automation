@@ -1,0 +1,827 @@
+{
+  "grafana": {
+    "base_url": "https://monitoring.ilcs.co.id/",
+    "login_path": "/login",
+    "username_env": "GRAFANA_USERNAME",
+    "password_env": "GRAFANA_PASSWORD",
+    "org_id": 1,
+    "theme": "dark",
+    "kiosk": true,
+    "timezone": "Asia/Jakarta",
+    "viewport": {
+      "width": 3440,
+      "height": 1220
+    },
+    "full_page": true,
+    "wait_seconds": 8,
+    "ignore_https_errors": false
+  },
+  "output": {
+    "root": "D:/GrafanaReports",
+    "folder_template": "{year}/{month_number}. {month_name}/{site}/{group}/{category}/{name}",
+    "overwrite": true
+  },
+  "periods": {
+    "target_month": "previous",
+    "weekly_mode": "four_blocks"
+  },
+  "schedule": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "monthly": {
+      "enabled": true,
+      "day": 1,
+      "time": "07:30",
+      "capture": "previous_month",
+      "include_weeklies": true
+    },
+    "weekly": {
+      "enabled": false,
+      "day": "monday",
+      "time": "07:00",
+      "capture": "previous_7_days"
+    }
+  },
+  "dashboards": [
+    {
+      "name": "BO New",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "Cluster",
+      "url": "/d/ferdmagigyzggb/k8s-back-office?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-cluster_name=back-office-new&var-namespace=&var-container_name=&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 487
+      }
+    },
+    {
+      "name": "BO2",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "Cluster",
+      "url": "/d/ferdmagigyzggb/k8s-back-office?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-cluster_name=back-office-2&var-namespace=&var-container_name=&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 487
+      }
+    },
+    {
+      "name": "BIO1",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/bey7rgxvk9b0ga/vm-windows?var-prome_ds=eey4rwzgb9ibke&var-nodename=gcp-srvwpbios01&var-instance=10.174.3.6%3A9182&var-interval=1h",
+      "viewport": {
+        "height": 470
+      }
+    },
+    {
+      "name": "Centra",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvlpcentra01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "E Proc",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvlppeproc01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "MyPelindo",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvlpmy01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "Pajak",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvlppajak01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "Power BI",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/bey7rgxvk9b0ga/vm-windows?var-interval=1m&timezone=browser&var-prome_ds=eey4rwzgb9ibke&var-nodename=gcp-srvwpbios01&var-instance=10.174.3.6%3A9182",
+      "viewport": {
+        "height": 615
+      }
+    },
+    {
+      "name": "Prima",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvlpprima01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "PRKM",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvlprkm01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "Simtax",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvwpsimtax&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "Tanos",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-svrlptanos01&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "Cloud Armor - All",
+      "site": "GCP",
+      "group": "Network and Security",
+      "category": "Cloud Armor",
+      "url": "/d/cefogwvbsp2bkc/cloud-armor-all?refresh=1h",
+      "viewport": {
+        "height": 525
+      }
+    },
+    {
+      "name": "Interconnect",
+      "site": "GCP",
+      "group": "Network and Security",
+      "category": "Interconnect",
+      "url": "/d/eexfbo85ofwu8e/interconnect?refresh=1h&timezone=browser",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "Load Balancer",
+      "site": "GCP",
+      "group": "Network and Security",
+      "category": "Load Balancer",
+      "url": "/d/cey479vts11xce/gcp-load-balancer?refresh=1h",
+      "viewport": {
+        "height": 470
+      }
+    },
+    {
+      "name": "qa ho",
+      "site": "GCP",
+      "group": "QA",
+      "category": "K8s QA",
+      "url": "/d/df07rysvmjx1cc/vm-linux?var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter&var-nodename=gcp-srvlpprima01&var-instance=10.174.3.53%3A9100&var-interval=1h",
+      "viewport": {
+        "height": 490
+      }
+    },
+    {
+      "name": "srvldprima01",
+      "site": "GCP",
+      "group": "QA",
+      "category": "Prima QA",
+      "url": "/d/df07rysvmjx1cc/vm-linux?var-interval=1h&var-nodename=gcp-srvlpprima01&var-instance=10.174.3.53%3A9100&var-nodename=gcp-srvldprima01&var-instance=10.174.3.53%3A9100&timezone=browser&var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter",
+      "viewport": {
+        "height": 615
+      }
+    },
+    {
+      "name": "svrldpeo qa",
+      "site": "GCP",
+      "group": "QA",
+      "category": "PEO QA",
+      "url": "/d/df07rysvmjx1cc/vm-linux?var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter&var-nodename=svrldpeo-qa&var-instance=10.174.4.46%3A9100&var-interval=1h",
+      "viewport": {
+        "height": 620
+      }
+    },
+    {
+      "name": "data analytic",
+      "site": "GCP",
+      "group": "Analytic",
+      "category": "Clstr Analytic",
+      "url": "/d/deyflbnkv7wn4f/cluster-kubernetes?var-interval=1h&var-cluster=data-analytic&var-namespace=All&var-container=All&var-prome_ds=eey4rwzgb9ibke",
+      "viewport": {
+        "height": 635
+      }
+    },
+    {
+      "name": "K8s Payment",
+      "site": "GCP",
+      "group": "Payment",
+      "category": "K8s Payment",
+      "url": "/d/87v4vm98cfrvr2v3/k8s-payment?var-datasource=cecpye14uwxkwc&var-project=pelindo-payment&var-cluster_name=k8s-payment&var-container_name=&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 510
+      }
+    },
+    {
+      "name": "ematerai",
+      "site": "GCP",
+      "group": "Payment",
+      "category": "E Materai",
+      "url": "/d/df07rysvmjx1cc/vm-linux?var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter&var-nodename=ematerai&var-instance=10.174.2.6%3A9100&var-interval=1h&timezone=browser",
+      "viewport": {
+        "height": 615
+      }
+    },
+    {
+      "name": "ibs-api-1",
+      "site": "GCP",
+      "group": "Payment",
+      "category": "IBS",
+      "url": "/d/bey7rgxvk9b0ga/vm-windows?var-prome_ds=eey4rwzgb9ibke&var-nodename=ibs-api-1&var-instance=10.174.2.40%3A9182&var-interval=1h",
+      "viewport": {
+        "height": 470
+      }
+    },
+    {
+      "name": "Integration",
+      "site": "GCP",
+      "group": "Payment",
+      "category": "Integration",
+      "url": "/d/bey7rgxvk9b0ga/vm-windows?var-prome_ds=eey4rwzgb9ibke&var-nodename=integration&var-instance=10.174.2.7%3A9182&var-interval=1h",
+      "viewport": {
+        "height": 460
+      }
+    },
+    {
+      "name": "payment-bank-01",
+      "site": "GCP",
+      "group": "Payment",
+      "category": "PaymentBank",
+      "url": "/d/bey7rgxvk9b0ga/vm-windows?var-prome_ds=eey4rwzgb9ibke&var-nodename=payment-bank-01&var-instance=10.174.2.50%3A9182&var-interval=1h",
+      "viewport": {
+        "height": 465
+      }
+    },
+    {
+      "name": "Pelindo Pay",
+      "site": "GCP",
+      "group": "Payment",
+      "category": "Pelindo Pay",
+      "url": "/d/advadwnf34b34n/vm-payment-pelindo-pay?var-datasource=cecpye14uwxkwc&var-project=pelindo-payment&var-instance_name=pelindo-pay&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 520
+      }
+    },
+    {
+      "name": "PO",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "VM SAP",
+      "url": "/d/v87g8m9c4f8ng9/vm-sap?var-datasource=cecpye14uwxkwc&var-project=pelindo-sap&var-instance_name=svrlppo001&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 371
+      }
+    },
+    {
+      "name": "Connector",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "VM SAP",
+      "url": "/d/v87g8m9c4f8ng9/vm-sap?var-datasource=cecpye14uwxkwc&var-project=pelindo-sap&var-instance_name=svrlpccon0.%2A&var-alignmentPeriod=grafana-auto",
+      "viewport": {
+        "height": 371
+      }
+    },
+    {
+      "name": "Connector 1",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "VM Connector",
+      "url": "/d/df07rysvmjx1cc/vm-linux?var-interval=1m&timezone=browser&var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter&var-nodename=svrlpccon01&var-instance=10.174.1.54%3A9100",
+      "viewport": {
+        "height": 470
+      }
+    },
+    {
+      "name": "Connector 2",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "VM Connector",
+      "url": "/d/df07rysvmjx1cc/vm-linux?var-interval=1m&timezone=browser&var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter&var-nodename=svrlpccon02&var-instance=10.174.1.54%3A9100",
+      "viewport": {
+        "height": 470
+      }
+    },
+    {
+      "name": "sap peic",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "SAP BTP",
+      "url": "/d/ceu58oumv3qiod/k8s-sap?var-datasource=cecpye14uwxkwc&var-project=pelindo-sap&var-cluster_name=sap-peic&var-namespace=&var-container_name=&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 490
+      }
+    },
+    {
+      "name": "svreicprdsql",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "Server DB Util - SAP EIC",
+      "url": "/d/aeu5916cfad4wb/sql-sap?var-datasource=cecpye14uwxkwc&var-project=pelindo-sap&var-db_name=svreicprdsql&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "svreicprdredis",
+      "site": "GCP",
+      "group": "SAP",
+      "category": "Server Redis Utilization - SAP EIC",
+      "url": "/d/eeu5c3dxxotfkc/redis-sap?var-datasource=cecpye14uwxkwc&var-project=pelindo-sap&var-instance_name=All&var-alignmentPeriod=%2B3600s",
+      "viewport": {
+        "height": 430
+      }
+    },
+    {
+      "name": "DB-Repo",
+      "site": "OCI Pelindo",
+      "group": "APP",
+      "category": "Pelindo-Hub",
+      "url": "/d/df3s92klm9ybkeilcs/db-oracle?var-prome_ds=bdy31xghxyh34d&var-db_name=db-repo&var-interval=1h&var-instance=All",
+      "viewport": {
+        "height": 675
+      }
+    },
+    {
+      "name": "Kong DB",
+      "site": "OCI Pelindo",
+      "group": "APP",
+      "category": "Pelindo-Hub",
+      "url": "/d/demc1ufes7fuoe/pelindo-hub-vm?var-instance_name=kong-db&var-interval=1h",
+      "viewport": {
+        "height": 465
+      }
+    },
+    {
+      "name": "Kong Gateway",
+      "site": "OCI Pelindo",
+      "group": "APP",
+      "category": "Pelindo-Hub",
+      "url": "/d/demc1ufes7fuoe/pelindo-hub-vm?var-instance_name=Kong&var-interval=1h",
+      "viewport": {
+        "height": 465
+      }
+    },
+    {
+      "name": "Node Red",
+      "site": "OCI Pelindo",
+      "group": "APP",
+      "category": "Pelindo-Hub",
+      "url": "/d/demc1ufes7fuoe/pelindo-hub-vm?var-instance_name=node-red&var-interval=1h",
+      "viewport": {
+        "height": 465
+      }
+    },
+    {
+      "name": "Prod IBM",
+      "site": "OCI Pelindo",
+      "group": "APP",
+      "category": "Pelindo-Hub",
+      "url": "/d/demc1ufes7fuoe/pelindo-hub-vm?var-instance_name=prod-ibm%2A&var-interval=1h",
+      "viewport": {
+        "height": 465
+      }
+    },
+    {
+      "name": "oci-srvlptravel01",
+      "site": "OCI Pelindo",
+      "group": "APP",
+      "category": "Travel",
+      "url": "/d/be954464vl2pseasc/vm-apps?var-instance_name=oci-srvlptravel01&var-interval=1h&var-compartment=pelindo+%3E+App-Pelindo-HO",
+      "viewport": {
+        "height": 370
+      }
+    },
+    {
+      "name": "ayodya",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Ayodya",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=ayodya&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 630
+      }
+    },
+    {
+      "name": "dlake edge",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-edge&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "dlake mstr",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-mstr&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "dlake repo",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-repo&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "dlake util",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-util&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "dlake wkr",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-wkr&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "dns server",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dns-serve&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "freeipa",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=freeipa&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "strm kfk",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-kfk&var-interval=1h",
+      "viewport": {
+        "height": 450
+      }
+    },
+    {
+      "name": "strm mstr",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-mstr&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "strm nf",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-nf&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "strm util",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Cloudera",
+      "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-util&var-interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "Sigap Dev",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "DB Sigap Postgres",
+      "url": "/d/cejrks918xtkwb/db-sigap-postgres?var-dbname=sigap&var-Interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "Sigap Prod",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "DB Sigap Postgres",
+      "url": "/d/cejrks918xtkwb/db-sigap-postgres?var-dbname=sigap-prod&var-Interval=1h",
+      "viewport": {
+        "height": 445
+      }
+    },
+    {
+      "name": "hastina",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Hastina",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=hastina&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 635
+      }
+    },
+    {
+      "name": "madra",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "Madra",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=madra&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 635
+      }
+    },
+    {
+      "name": "db-mysql-01",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "DB MySQL - DB Pelindo",
+      "url": "/d/y3gun4vh5yceftm6u/db-mysql-db-pelindo?var-db_name=All&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "Pancala",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "DB Oracle - DB Pelindo",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=pancala&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 635
+      }
+    },
+    {
+      "name": "Alengka",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "DB Oracle - DB Pelindo",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-interval=1h&timezone=browser&var-db_name=alengka&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 635
+      }
+    },
+    {
+      "name": "Phinnisi",
+      "site": "OCI Pelindo",
+      "group": "Phinnisi",
+      "category": "DB Phinnisi",
+      "url": "/d/deiv4bn1a5w5ce/db-phinnisi?var-db_name=All&var-compartment=ilcspsdcloudaccount+%3E+prod-phinnisi&var-interval=1h",
+      "viewport": {
+        "height": 640
+      }
+    },
+    {
+      "name": "VM Phinnisi",
+      "site": "OCI Pelindo",
+      "group": "Phinnisi",
+      "category": "VM Phinnisi",
+      "url": "/d/fegsg889m1vk0d/vm-phinnisi?var-instance_name=All&var-compartment=ilcspsdcloudaccount+%3E+prod-phinnisi&var-interval=1h&var-nodepool1=oke-c5r74d6mfva-ndgzllb7uca-s2dlrd4cwu&var-nodepool2=oke-c5r74d6mfva-nlflfmfum5q-s2dlrd4cwua",
+      "viewport": {
+        "height": 430
+      }
+    },
+    {
+      "name": "dbportaverse",
+      "site": "Huawei",
+      "group": "Portaverse",
+      "category": "DB",
+      "url": "/d/cdyyfytqtixogfdsfdsf/centralized-rds?var-EPS=0&var-hostIP=All&var-hostname=dbportaverse&var-total=4&refresh=1h",
+      "viewport": {
+        "height": 615
+      }
+    },
+    {
+      "name": "huwai-portaverse",
+      "site": "Huawei",
+      "group": "Portaverse",
+      "category": "K8s",
+      "url": "/d/cezp5v5ej4f0gcddf/centralized-kubenertes?var-interval=1h&var-cluster=huwai-portaverse&var-namespace=All&var-container=All&refresh=1h",
+      "viewport": {
+        "height": 760
+      }
+    },
+    {
+      "name": "Bandwidth",
+      "site": "Huawei",
+      "group": "Portaverse",
+      "category": "Bandwidth",
+      "url": "/d/id-huawei-201/vpc-vpn-and-bandwidth?refresh=1h",
+      "viewport": {
+        "height": 540
+      }
+    },
+    {
+      "name": "CDN (Object Storage)",
+      "site": "Huawei",
+      "group": "Portaverse",
+      "category": "CDN (Object Storage)",
+      "url": "/d/MtZyHmbIk/content-delivery-network-cdn?var-DomainName=All&refresh=1h",
+      "viewport": {
+        "height": 705
+      }
+    },
+    {
+      "name": "cluster-apps-huawei",
+      "site": "Huawei",
+      "group": "Cluster Apps Huawei",
+      "category": "",
+      "url": "/d/cezp5v5ej4f0gcddf/centralized-kubenertes?refresh=1h&var-interval=1h&var-cluster=cluster-apps-huawei&var-namespace=All&var-container=All",
+      "viewport": {
+        "height": 730
+      }
+    },
+    {
+      "name": "vm simon-stid",
+      "site": "Huawei",
+      "group": "STID Nasional & SIMON TKBM",
+      "category": "VM",
+      "url": "/d/portefaix_node_fleet_overviewdsd/centralized-vm?var-DS_Metrics=eey51w20ssn40e&var-job=vm&var-vm=simon-stid&var-rate_interval=1h",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "db-stid-simon",
+      "site": "Huawei",
+      "group": "STID Nasional & SIMON TKBM",
+      "category": "DB",
+      "url": "/d/cdyyfytqtixogfdsfdsf/centralized-rds?var-EPS=0&var-hostIP=All&var-hostname=db-stid-simon&var-total=4&refresh=1h",
+      "viewport": {
+        "height": 620
+      }
+    },
+    {
+      "name": "vm-ims",
+      "site": "Huawei",
+      "group": "IMS",
+      "category": "VM",
+      "url": "/d/portefaix_node_fleet_overviewdsd/centralized-vm?var-DS_Metrics=eey51w20ssn40e&var-job=vm&var-vm=ims&var-rate_interval=1h",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "db-apps(ims)",
+      "site": "Huawei",
+      "group": "IMS",
+      "category": "DB",
+      "url": "/d/cdyyfytqtixogfdsfdsf/centralized-rds?var-EPS=0&var-hostIP=All&var-hostname=db-apps&var-total=4&refresh=1h",
+      "viewport": {
+        "height": 620
+      }
+    },
+    {
+      "name": "vm-talend-adm-center",
+      "site": "Alibaba",
+      "group": "Centralized",
+      "category": "VM-Linux",
+      "url": "/d/ef7j4mcaf5o1sa/vm-linux?var-prome_ds=bf7j4h894gzk0a&var-job=node-exporter&var-nodename=vm-talend-adm-center&var-instance=10.95.220.2%3A9100&var-interval=1m",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "vm-talend-data-stewardship",
+      "site": "Alibaba",
+      "group": "Centralized",
+      "category": "VM-Linux",
+      "url": "/d/ef7j4mcaf5o1sa/vm-linux?var-prome_ds=bf7j4h894gzk0a&var-job=node-exporter&var-nodename=vm-talend-data-stewardship&var-instance=10.95.221.2%3A9100&var-interval=1m",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "vm-talend-job-01",
+      "site": "Alibaba",
+      "group": "Centralized",
+      "category": "VM-Linux",
+      "url": "/d/ef7j4mcaf5o1sa/vm-linux?var-prome_ds=bf7j4h894gzk0a&var-job=node-exporter&var-nodename=vm-talend-job-01&var-instance=10.95.220.1%3A9100&var-interval=1m",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "vm-talend-job-02",
+      "site": "Alibaba",
+      "group": "Centralized",
+      "category": "VM-Linux",
+      "url": "/d/ef7j4mcaf5o1sa/vm-linux?var-prome_ds=bf7j4h894gzk0a&var-job=node-exporter&var-nodename=vm-talend-job-02&var-instance=10.95.221.1%3A9100&var-interval=1m",
+      "viewport": {
+        "height": 670
+      }
+    },
+    {
+      "name": "B01",
+      "site": "SLA",
+      "group": "GCP",
+      "category": "Clstr Kubernetes",
+      "url": "/d/deyflbnkv7wn4f/cluster-kubernetes?var-interval=1h&var-cluster=back-office-1&var-namespace=All&var-container=All&var-prome_ds=eey4rwzgb9ibke&var-instance=All",
+      "viewport": {
+        "height": 640
+      }
+    },
+    {
+      "name": "B02",
+      "site": "SLA",
+      "group": "GCP",
+      "category": "Clstr Kubernetes",
+      "url": "/d/deyflbnkv7wn4f/cluster-kubernetes?var-interval=1h&var-cluster=back-office-2&var-namespace=All&var-container=All&var-prome_ds=eey4rwzgb9ibke&var-instance=All",
+      "viewport": {
+        "height": 640
+      }
+    },
+    {
+      "name": "Centralized RDS",
+      "site": "SLA",
+      "group": "Huawei",
+      "category": "RDS",
+      "url": "/d/cdyyfytqtixogfdsfdsf/centralized-rds",
+      "viewport": {
+        "height": 730
+      }
+    },
+    {
+      "name": "huawei-centralized",
+      "site": "SLA",
+      "group": "Huawei",
+      "category": "Centralized VM",
+      "url": "/d/portefaix_node_fleet_overview/centralized-vm",
+      "viewport": {
+        "height": 674
+      }
+    },
+    {
+      "name": "All",
+      "site": "SLA",
+      "group": "OCI",
+      "category": "DB Oracle - DB Pelindo",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=All&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 636
+      }
+    },
+    {
+      "name": "Alibaba VM",
+      "site": "SLA",
+      "group": "Alibaba",
+      "category": "",
+      "url": "/d/alibaba_vm/centralized-vm-alibaba-custom?timezone=browser&var-instance=%24__all&refresh=30s",
+      "viewport": {
+        "height": 640
+      }
+    }
+  ]
+}

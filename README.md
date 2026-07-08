@@ -27,7 +27,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python -m playwright install chromium
-Copy-Item .\config.example.json .\config.json
+Copy-Item .\config.shared.json .\config.json
 Copy-Item .\.env.example .\.env
 ```
 
@@ -35,7 +35,7 @@ Edit `config.json`:
 
 - Set `grafana.base_url`.
 - Set `output.root`.
-- Add each dashboard URL under `dashboards`.
+- The shared dashboard URLs are already included in `config.shared.json`.
 
 Edit `.env` with your own Grafana login:
 
@@ -45,6 +45,8 @@ GRAFANA_PASSWORD=your-password
 ```
 
 The script automatically reads `.env` from the same folder as `config.json`. Do not share the real `.env` file.
+
+`config.shared.json` contains the shared 78-dashboard list. Copy it to `config.json` for local use, then adjust only local settings such as `output.root` if needed. Keep `config.json` uncommitted for personal changes.
 
 ## Run Once
 
@@ -107,5 +109,4 @@ Example:
 ```
 
 If login uses SSO or MFA, run once with `--show-browser`, complete the login manually, and keep `grafana.storage_state` enabled so Playwright can reuse the saved browser session.
-
 
