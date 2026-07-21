@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Run report | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Run report</h1><p>Create a queued screenshot job for all active or selected dashboards.</p></div></header>
+{% if not connection_ready %}<div class="message warning">Grafana credentials are not configured. Ask an admin to update the Grafana connection.</div>{% endif %}
+<section class="form-panel"><form method="post" class="form-grid" data-run-form>{% csrf_token %}{{ form.as_div }}<div class="form-actions"><button class="button primary" type="submit" {% if not connection_ready %}disabled{% endif %}>Queue report</button><a class="button" href="{% url 'run_list' %}">Cancel</a></div></form></section>
+{% endblock %}

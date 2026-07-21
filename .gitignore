@@ -4,9 +4,13 @@ config.json
 __pycache__/
 *.pyc
 reports/
+db.sqlite3
+staticfiles/
+celerybeat-schedule*
 .env
 .env.local
 .agents/
 .codex/
 .venv-1/
+.runtime/
 

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Import dashboards{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Import dashboards</h1><p>Upload the shared JSON configuration or an Excel workbook.</p></div></header>
+<section class="form-panel">
+  {% if not mapping_form %}<form method="post" enctype="multipart/form-data" class="stack-form">{% csrf_token %}<input type="hidden" name="step" value="upload">{{ upload_form.as_div }}<button class="button primary" type="submit">Preview file</button></form>
+  {% else %}<form method="post" class="form-grid">{% csrf_token %}<input type="hidden" name="step" value="apply">{{ mapping_form.as_div }}<div class="form-actions"><button class="button primary" type="submit">Apply import</button><a class="button" href="{% url 'dashboard_import' %}">Start over</a></div></form>{% endif %}
+</section>
+{% if preview_rows %}<section class="panel"><div class="panel-heading"><h2>First {{ preview_rows|length }} rows</h2></div><div class="import-preview">{% for row in preview_rows %}<pre>{{ row }}</pre>{% endfor %}</div></section>{% endif %}
+{% endblock %}

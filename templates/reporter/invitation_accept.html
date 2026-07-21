@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Accept invitation{% endblock %}
+{% block content %}<section class="auth-panel"><div class="auth-brand"><span class="brand-mark">GR</span><strong>Grafana Reporter</strong></div><h1>Set up your account</h1><p>{{ invitation.email }}</p><form method="post" class="stack-form">{% csrf_token %}{{ form.as_div }}<button class="button primary wide" type="submit">Create account</button></form></section>{% endblock %}

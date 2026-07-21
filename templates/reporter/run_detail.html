@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Run {{ run.id }} | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Report run</h1><p class="mono">{{ run.id }}</p></div><div class="actions">{% if run.completed_artifacts %}<a class="button" href="{% url 'run_download' run.pk %}">Download ZIP</a>{% endif %}{% if user.can_operate and run.status == 'queued' or user.can_operate and run.status == 'running' %}<form method="post" action="{% url 'run_cancel' run.pk %}">{% csrf_token %}<button class="button danger-button" type="submit">Cancel run</button></form>{% endif %}</div></header>
+<section class="run-summary" data-run-status-url="{% url 'run_status' run.pk %}" data-running="{% if run.status == 'queued' or run.status == 'running' %}true{% else %}false{% endif %}">
+  <div><span>Status</span><strong data-status>{{ run.get_status_display }}</strong></div><div><span>Source</span><strong>{{ run.get_source_display }}</strong></div><div><span>Period</span><strong>{{ run.period_start|date:"Y-m-d" }} to {{ run.period_end|date:"Y-m-d" }}</strong></div><div><span>Progress</span><strong data-progress-label>{{ run.completed_artifacts|add:run.failed_artifacts }}/{{ run.total_artifacts }}</strong></div>
+  <div class="progress-track"><span data-progress-bar style="width: {{ run.progress_percent }}%"></span></div><p data-summary>{{ run.summary }}</p>
+</section>
+<div class="panel table-wrap"><table><thead><tr><th>Dashboard</th><th>File</th><th>Period</th><th>Status</th><th>Attempts</th><th>Result</th></tr></thead><tbody>
+{% for artifact in artifacts %}<tr><td><strong>{{ artifact.dashboard_name }}</strong><small class="cell-note">{{ artifact.site }} / {{ artifact.category }}</small></td><td>{{ artifact.filename }}</td><td>{{ artifact.period_start|date:"Y-m-d" }} to {{ artifact.period_end|date:"Y-m-d" }}</td><td><span class="status {{ artifact.status }}">{{ artifact.get_status_display }}</span></td><td>{{ artifact.attempts }}</td><td>{% if artifact.status == 'succeeded' %}<a href="{% url 'artifact_image' artifact.pk %}" target="_blank">Open image</a>{% elif artifact.error %}<span class="error-text" title="{{ artifact.error }}">{{ artifact.error|truncatechars:80 }}</span>{% else %}-{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

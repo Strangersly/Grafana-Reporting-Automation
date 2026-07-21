@@ -68,7 +68,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "panel_timeout_seconds": 60,
         "ignore_https_errors": False,
         "storage_state": ".grafana-auth-state.json",
-        "wait_for_selector": ".panel-container, [data-testid='panel-container'], [data-testid='data-testid Panel header']",
+        "wait_for_selector": ".panel-container, [data-testid='panel-container'], [data-testid='data-testid panel content'], [data-testid^='data-testid Panel header ']",
     },
     "output": {
         "root": "reports",
@@ -361,6 +361,29 @@ def build_dashboard_url(
         query_pairs = set_query_param(query_pairs, key, value)
 
     return urlunparse(parsed._replace(query=urlencode(query_pairs)))
+
+
+# The CLI retains its established argument and scheduler behavior while using
+# the same report domain functions as the Django worker.
+from reporting.core import (  # noqa: E402
+    Period as SharedPeriod,
+    build_dashboard_url as shared_build_dashboard_url,
+    build_periods as shared_build_periods,
+    month_period as shared_month_period,
+    output_path_for as shared_output_path_for,
+    previous_7_days_period as shared_previous_7_days_period,
+    safe_path_part as shared_safe_path_part,
+    week_block_periods as shared_week_block_periods,
+)
+
+Period = SharedPeriod
+month_period = shared_month_period
+week_block_periods = shared_week_block_periods
+previous_7_days_period = shared_previous_7_days_period
+build_periods = shared_build_periods
+safe_path_part = shared_safe_path_part
+output_path_for = shared_output_path_for
+build_dashboard_url = shared_build_dashboard_url
 
 
 def resolve_relative_path(raw_path: str | None, base_dir: Path) -> Path | None:

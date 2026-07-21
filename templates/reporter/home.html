@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Overview | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Operations overview</h1><p>{{ dashboard_count }} active dashboards across scheduled and manual reports.</p></div>{% if user.can_operate %}<a class="button primary" href="{% url 'run_create' %}">Run report</a>{% endif %}</header>
+<section class="metrics" aria-label="System summary">
+  <div><span>Active schedules</span><strong>{{ active_schedules }}</strong></div>
+  <div><span>Queued</span><strong>{{ queued_runs }}</strong></div>
+  <div><span>Running</span><strong>{{ running_runs }}</strong></div>
+  <div><span>Needs attention</span><strong>{{ failed_runs }}</strong></div>
+  <div><span>Disk free</span><strong>{{ disk_free_gb }} GB</strong><small>{{ disk_used_percent }}% used</small></div>
+</section>
+<section class="content-grid">
+  <div class="panel">
+    <div class="panel-heading"><h2>Recent runs</h2><a href="{% url 'run_list' %}">View all</a></div>
+    <div class="table-wrap"><table><thead><tr><th>Started</th><th>Source</th><th>Status</th><th>Progress</th></tr></thead><tbody>
+      {% for run in recent_runs %}<tr><td><a href="{% url 'run_detail' run.pk %}">{{ run.created_at|date:"Y-m-d H:i" }}</a></td><td>{{ run.get_source_display }}</td><td><span class="status {{ run.status }}">{{ run.get_status_display }}</span></td><td>{{ run.completed_artifacts|add:run.failed_artifacts }}/{{ run.total_artifacts }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No report runs yet.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  <div class="panel">
+    <div class="panel-heading"><h2>Latest reports</h2><a href="{% url 'report_library' %}">Browse reports</a></div>
+    <div class="artifact-list">{% for artifact in recent_artifacts %}<a href="{% url 'artifact_image' artifact.pk %}" target="_blank"><span>{{ artifact.dashboard_name }}</span><small>{{ artifact.filename }} / {{ artifact.finished_at|date:"Y-m-d H:i" }}</small></a>{% empty %}<p class="empty">No screenshots have been generated.</p>{% endfor %}</div>
+  </div>
+</section>
+{% endblock %}

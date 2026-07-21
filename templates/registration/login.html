@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in | Grafana Reporter{% endblock %}
+{% block content %}
+<section class="auth-panel">
+  <div class="auth-brand"><span class="brand-mark">GR</span><strong>Grafana Reporter</strong></div>
+  <h1>Sign in</h1>
+  {% if rate_limited %}<div class="form-error">Too many failed attempts. Try again in 15 minutes.</div>{% endif %}
+  {% if form.non_field_errors %}<div class="form-error">The email or password is incorrect.</div>{% endif %}
+  <form method="post" class="stack-form">
+    {% csrf_token %}
+    <label for="id_username">Email</label>{{ form.username }}
+    <label for="id_password">Password</label>{{ form.password }}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="button primary wide" type="submit">Sign in</button>
+  </form>
+  <a class="quiet-link" href="{% url 'password_reset' %}">Forgot password?</a>
+</section>
+{% endblock %}

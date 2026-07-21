@@ -1,0 +1,21 @@
+[Unit]
+Description=Grafana Reporter screenshot worker
+After=network.target postgresql.service redis-server.service
+Requires=postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=grafana-reporter
+Group=grafana-reporter
+WorkingDirectory=/srv/grafana-reporter
+EnvironmentFile=/etc/grafana-reporter.env
+Environment=PLAYWRIGHT_BROWSERS_PATH=/srv/grafana-reporter/.playwright
+ExecStart=/srv/grafana-reporter/.venv/bin/celery -A grafana_web worker --loglevel=INFO --concurrency=1
+Restart=always
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target

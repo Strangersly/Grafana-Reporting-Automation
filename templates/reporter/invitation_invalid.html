@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Invalid invitation{% endblock %}
+{% block content %}<section class="auth-panel"><h1>Invitation unavailable</h1><div class="form-error">{{ error }}</div><a class="button" href="{% url 'login' %}">Back to sign in</a></section>{% endblock %}

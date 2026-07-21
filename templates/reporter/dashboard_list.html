@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Dashboards | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Dashboards</h1><p>Manage the Grafana targets included in reports.</p></div><div class="actions"><a class="button" href="{% url 'dashboard_import' %}">Import</a><a class="button primary" href="{% url 'dashboard_create' %}">Add dashboard</a></div></header>
+<form method="get" class="filter-bar"><input type="search" name="q" value="{{ query }}" placeholder="Search dashboards"><select name="site"><option value="">All sites</option>{% for value in sites %}<option value="{{ value }}" {% if value == site %}selected{% endif %}>{{ value }}</option>{% endfor %}</select><button class="button" type="submit">Filter</button></form>
+<form id="bulk-dashboard-form" method="post" action="{% url 'dashboard_bulk' %}">{% csrf_token %}</form>
+  <div class="bulk-bar"><select name="action" form="bulk-dashboard-form"><option value="">Bulk action</option><option value="enable">Enable</option><option value="disable">Disable</option></select><button class="button" type="submit" form="bulk-dashboard-form">Apply</button><span>{{ dashboards|length }} dashboards</span></div>
+  <div class="panel table-wrap"><table><thead><tr><th class="check"><input type="checkbox" data-check-all aria-label="Select all"></th><th>Name</th><th>Site</th><th>Group</th><th>Category</th><th>Status</th><th></th></tr></thead><tbody>
+    {% for dashboard in dashboards %}<tr><td><input type="checkbox" name="dashboard_ids" value="{{ dashboard.pk }}" form="bulk-dashboard-form"></td><td><strong>{{ dashboard.name }}</strong></td><td>{{ dashboard.site }}</td><td>{{ dashboard.group }}</td><td>{{ dashboard.category }}</td><td><span class="status {% if dashboard.enabled %}succeeded{% else %}cancelled{% endif %}">{% if dashboard.enabled %}Enabled{% else %}Disabled{% endif %}</span></td><td class="row-actions"><a href="{% url 'dashboard_edit' dashboard.pk %}">Edit</a><form method="post" action="{% url 'dashboard_delete' dashboard.pk %}" data-confirm="Delete {{ dashboard.name }}?">{% csrf_token %}<button class="link-button danger" type="submit">Delete</button></form></td></tr>{% empty %}<tr><td colspan="7" class="empty">No dashboards match this filter.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% endblock %}

@@ -1,0 +1,19 @@
+[Unit]
+Description=Grafana Reporter schedule dispatcher
+After=network.target postgresql.service redis-server.service
+Requires=postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=grafana-reporter
+Group=grafana-reporter
+WorkingDirectory=/srv/grafana-reporter
+EnvironmentFile=/etc/grafana-reporter.env
+ExecStart=/srv/grafana-reporter/.venv/bin/celery -A grafana_web beat --loglevel=INFO --schedule=/srv/grafana-reporter/var/celerybeat-schedule
+Restart=always
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

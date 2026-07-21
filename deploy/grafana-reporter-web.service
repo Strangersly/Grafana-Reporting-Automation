@@ -1,0 +1,20 @@
+[Unit]
+Description=Grafana Reporter web application
+After=network.target postgresql.service redis-server.service
+Requires=postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=grafana-reporter
+Group=grafana-reporter
+WorkingDirectory=/srv/grafana-reporter
+EnvironmentFile=/etc/grafana-reporter.env
+RuntimeDirectory=grafana-reporter
+ExecStart=/srv/grafana-reporter/.venv/bin/gunicorn --workers 3 --bind unix:/run/grafana-reporter/web.sock --access-logfile - --error-logfile - grafana_web.wsgi:application
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

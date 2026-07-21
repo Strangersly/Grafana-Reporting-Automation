@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Schedules | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Schedules</h1><p>Autonomous report runs use Asia/Jakarta time unless overridden.</p></div><a class="button primary" href="{% url 'schedule_create' %}">Add schedule</a></header>
+<div class="panel table-wrap"><table><thead><tr><th>Name</th><th>Recurrence</th><th>Report</th><th>Time</th><th>Dashboards</th><th>Status</th><th></th></tr></thead><tbody>
+{% for schedule in schedules %}<tr><td><strong>{{ schedule.name }}</strong><small class="cell-note">{{ schedule.timezone }}</small></td><td>{{ schedule.get_recurrence_display }}</td><td>{{ schedule.get_preset_display }}</td><td>{{ schedule.run_time|time:"H:i" }}{% if schedule.recurrence == 'monthly' %}, day {{ schedule.monthly_day }}{% else %}, {{ schedule.get_weekly_day_display|default:schedule.weekly_day }}{% endif %}</td><td>{% if schedule.all_dashboards %}All active{% else %}{{ schedule.dashboards.count }} selected{% endif %}</td><td><span class="status {% if schedule.enabled %}succeeded{% else %}cancelled{% endif %}">{% if schedule.enabled %}Enabled{% else %}Disabled{% endif %}</span></td><td class="row-actions"><a href="{% url 'schedule_edit' schedule.pk %}">Edit</a><form method="post" action="{% url 'schedule_delete' schedule.pk %}" data-confirm="Delete this schedule?">{% csrf_token %}<button class="link-button danger" type="submit">Delete</button></form></td></tr>{% empty %}<tr><td colspan="7" class="empty">No schedules configured.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

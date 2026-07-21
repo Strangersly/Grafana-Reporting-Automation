@@ -1,112 +1,136 @@
-# Grafana Screenshot Reports
+# Grafana Reporting Automation
 
-This local script signs in to Grafana, opens configured dashboards, captures PNG screenshots, and writes them into a report folder structure like:
+Grafana Reporting Automation is a Django web application and compatible local CLI for generating weekly and monthly Grafana dashboard screenshots. Reports keep the existing folder contract:
 
 ```text
-D:/GrafanaReports/2026/1. Januari/Alibaba/Centralized/VM-Linux/vm-talend-adm-center/
-  monthly.png
+reports/2026/7. Juli/Alibaba/Centralized/VM-Linux/vm-talend-adm-center/
   week1.png
   week2.png
   week3.png
   week4.png
+  monthly.png
 ```
 
-Weekly reports use four monthly blocks by default:
+The shared `config.shared.json` contains 78 dashboards. Real credentials, local configuration, database files, browser sessions, and generated reports are ignored by Git.
 
-```text
-week1.png = day 1-7
-week2.png = day 8-14
-week3.png = day 15-21
-week4.png = day 22-last day of month
-```
+## Web app features
 
-## Setup
+- Invitation-only email/password accounts with admin, operator, and viewer roles.
+- Encrypted shared Grafana service credentials.
+- Dashboard editing and Excel/JSON import with column mapping.
+- Manual monthly, weekly, previous-seven-day, and custom-range report runs.
+- Autonomous weekly and monthly schedules.
+- Background screenshot jobs with retries, cancellation, progress, and failure history.
+- Authenticated PNG previews and ZIP downloads.
+- Health checks for the database, cache, worker, report storage, Grafana, and SMTP.
+
+## Local web setup
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 python -m playwright install chromium
+Copy-Item .\.env.example .\.env
+python manage.py migrate
+python manage.py seed_dashboards --config .\config.shared.json
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+Open `http://127.0.0.1:8000`, sign in as the superuser, and save the Grafana service account under **Grafana connection**.
+
+The local development settings use SQLite, Redis, and console email. Production uses PostgreSQL, Redis, and SMTP through environment variables.
+
+### One-command local start
+
+This checkout includes PowerShell scripts that run the web app, Redis, the screenshot worker, and the scheduler in the background. Redis must be installed in the WSL `Ubuntu` distribution:
+
+```powershell
+wsl -d Ubuntu -u root -- apt-get update
+wsl -d Ubuntu -u root -- apt-get install -y redis-server
+.\scripts\start-local.ps1
+```
+
+Open `http://127.0.0.1:8000`. Runtime logs are written to `.runtime/`. Stop every local service cleanly with:
+
+```powershell
+.\scripts\stop-local.ps1
+```
+
+After a Windows restart, run `start-local.ps1` again. The script is idempotent, so running it while the services are already active does not start duplicates.
+
+To start the application automatically whenever the current Windows user signs in, register the included Scheduled Task once:
+
+```powershell
+.\scripts\register-local-autostart.ps1
+```
+
+Remove automatic startup with `.\scripts\register-local-autostart.ps1 -Remove`.
+
+Run Redis, the screenshot worker, and scheduler in separate terminals when testing background jobs:
+
+```powershell
+celery -A grafana_web worker --loglevel=INFO --pool=solo --concurrency=1
+celery -A grafana_web beat --loglevel=INFO
+```
+
+On Linux, omit `--pool=solo`. The production worker service is fixed at concurrency `1` so only one browser capture sequence reaches Grafana at a time.
+
+## Initial dashboard import
+
+Seed or update the included dashboards from the command line:
+
+```powershell
+python manage.py seed_dashboards --config .\config.shared.json
+```
+
+Operators can also upload `.xlsx` or `.json` files from **Dashboards > Import**. The preview maps source columns to `name`, `url`, `site`, `group`, and `category`. Full dashboard URLs are accepted only when they use the configured Grafana hostname.
+
+## Local CLI
+
+The original CLI remains available. Copy the shared config and local credential template first:
+
+```powershell
 Copy-Item .\config.shared.json .\config.json
 Copy-Item .\.env.example .\.env
 ```
 
-Edit `config.json`:
-
-- Set `grafana.base_url`.
-- Set `output.root`.
-- The shared dashboard URLs are already included in `config.shared.json`.
-
-Edit `.env` with your own Grafana login:
-
-```text
-GRAFANA_USERNAME=your-user
-GRAFANA_PASSWORD=your-password
-```
-
-The script automatically reads `.env` from the same folder as `config.json`. Do not share the real `.env` file.
-
-`config.shared.json` contains the shared 78-dashboard list. Copy it to `config.json` for local use, then adjust only local settings such as `output.root` if needed. Keep `config.json` uncommitted for personal changes.
-
-## Run Once
-
-Dry-run first to confirm URLs and output paths:
+Set `GRAFANA_USERNAME` and `GRAFANA_PASSWORD` in `.env`, then run:
 
 ```powershell
-python .\grafana_reporter.py --config .\config.json --report all --year 2026 --month 1 --dry-run
-```
-
-Capture the screenshots:
-
-```powershell
-python .\grafana_reporter.py --config .\config.json --report all --year 2026 --month 1
-```
-
-Without `--year` and `--month`, the script uses `periods.target_month` from the config. The example config uses the previous full month.
-
-## Custom Date Range
-
-Use `--from-date` and `--to-date` when a weekly report needs a manual date range. For example, July 1-5, 2026 saved as `week1.png`:
-
-```powershell
+python .\grafana_reporter.py --config .\config.json --report all --year 2026 --month 7
 python .\grafana_reporter.py --config .\config.json --report weekly --from-date 2026-07-01 --to-date 2026-07-05 --filename week1.png
-```
-
-If `--filename` is omitted for a weekly custom range, the script chooses `week1.png` through `week4.png` from the start date.
-
-## Run on Schedule
-
-Start the local scheduler:
-
-```powershell
 python .\grafana_reporter.py --config .\config.json --mode schedule
 ```
 
-The example config runs on day `1` of each month at `07:30` Asia/Jakarta time and captures the previous month, including `week1.png` through `week4.png` and `monthly.png`.
+Use `--dry-run` to inspect target paths without opening Chromium and `--limit 1` to test one dashboard.
 
-For unattended operation on Windows, create a Task Scheduler task that runs at login or system startup with:
+## Tests
 
-```text
-Program: D:\Project ICS\.venv\Scripts\python.exe
-Arguments: D:\Project ICS\grafana_reporter.py --config D:\Project ICS\config.json --mode schedule
-Start in: D:\Project ICS
+```powershell
+python manage.py check
+python manage.py test
 ```
 
-## Dashboard URL
+Tests cover date boundaries, path and URL generation, encryption, host restrictions, invitations, roles, imports, scheduling deduplication, run creation, and protected artifacts.
 
-Use the normal Grafana dashboard URL path. The script automatically adds `from`, `to`, `theme`, `orgId`, and `kiosk` query parameters based on the config.
+## Production deployment
 
-Example:
+Ubuntu 24.04 service files, Nginx configuration, environment template, and installation commands are in [deploy/README.md](deploy/README.md). The production layout uses:
 
-```json
-{
-  "name": "vm-talend-adm-center",
-  "site": "Alibaba",
-  "group": "Centralized",
-  "category": "VM-Linux",
-  "url": "/d/YOUR_DASHBOARD_UID/YOUR_DASHBOARD_SLUG?var-Hostname=vm-talend-adm-center"
-}
-```
+- `/srv/grafana-reporter` for the application.
+- `/srv/grafana-reporter/reports` for generated PNG files.
+- PostgreSQL and Redis bound to localhost.
+- Gunicorn, Celery worker, and Celery Beat as separate `systemd` services.
+- Nginx HTTPS and internal authenticated report delivery.
 
-If login uses SSO or MFA, run once with `--show-browser`, complete the login manually, and keep `grafana.storage_state` enabled so Playwright can reuse the saved browser session.
+No cloud-drive integration is included. Users download report folders as ZIP files and upload them manually.
 
+## Security notes
+
+- Generate a unique `DJANGO_SECRET_KEY` and Fernet `APP_ENCRYPTION_KEY` before production deployment.
+- Never commit `.env`, `config.json`, `db.sqlite3`, `.grafana-auth-state.json`, or report files.
+- Use a dedicated read-only Grafana service account without MFA.
+- Keep `APP_ENCRYPTION_KEY` in a restricted backup separate from PostgreSQL backups.
+- The public login endpoint is rate-limited, but v1 does not include MFA. Prefer an IP allowlist or company VPN when possible.

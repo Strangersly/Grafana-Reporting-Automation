@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>{{ title }}</h1></div></header>
+<section class="form-panel"><form method="post" class="form-grid">{% csrf_token %}{{ form.as_div }}<div class="form-actions"><button class="button primary" type="submit">Save</button><button class="button" type="button" onclick="history.back()">Cancel</button></div></form></section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Grafana Reporter{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'reporter/app.css' %}">
+  <script defer src="{% static 'reporter/app.js' %}"></script>
+</head>
+<body>
+  {% if user.is_authenticated %}
+    <aside class="sidebar">
+      <a class="brand" href="{% url 'home' %}">
+        <span class="brand-mark">GR</span>
+        <span><strong>Grafana Reporter</strong><small>Operations console</small></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="{% url 'home' %}">Overview</a>
+        {% if user.can_operate %}
+          <a href="{% url 'dashboard_list' %}">Dashboards</a>
+          <a href="{% url 'schedule_list' %}">Schedules</a>
+        {% endif %}
+        <a href="{% url 'run_list' %}">Runs {% if nav_active_runs %}<span class="nav-count">{{ nav_active_runs }}</span>{% endif %}</a>
+        <a href="{% url 'report_library' %}">Reports</a>
+        {% if user.is_admin %}
+          <span class="nav-heading">Administration</span>
+          <a href="{% url 'grafana_settings' %}">Grafana connection</a>
+          <a href="{% url 'user_list' %}">Users</a>
+        {% endif %}
+      </nav>
+      <div class="sidebar-user">
+        <span>{{ user.get_full_name|default:user.email }}</span>
+        <small>{{ user.get_role_display }}</small>
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="link-button" type="submit">Sign out</button></form>
+      </div>
+    </aside>
+  {% endif %}
+  <main class="{% if user.is_authenticated %}app-main{% else %}auth-main{% endif %}">
+    {% if messages %}
+      <div class="messages" aria-live="polite">
+        {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

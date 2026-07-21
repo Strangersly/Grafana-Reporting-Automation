@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Runs | Grafana Reporter{% endblock %}
+{% block content %}
+<header class="page-header"><div><h1>Report runs</h1><p>Scheduled and manually requested screenshot jobs.</p></div>{% if user.can_operate %}<a class="button primary" href="{% url 'run_create' %}">Run report</a>{% endif %}</header>
+<form method="get" class="filter-bar"><select name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="button" type="submit">Filter</button></form>
+<div class="panel table-wrap"><table><thead><tr><th>Created</th><th>Source</th><th>Period</th><th>Status</th><th>Progress</th><th>Requested by</th></tr></thead><tbody>
+{% for run in runs %}<tr><td><a href="{% url 'run_detail' run.pk %}">{{ run.created_at|date:"Y-m-d H:i" }}</a></td><td>{{ run.get_source_display }}{% if run.schedule %}<small class="cell-note">{{ run.schedule.name }}</small>{% endif %}</td><td>{{ run.period_start|date:"Y-m-d" }} to {{ run.period_end|date:"Y-m-d" }}</td><td><span class="status {{ run.status }}">{{ run.get_status_display }}</span></td><td>{{ run.completed_artifacts|add:run.failed_artifacts }}/{{ run.total_artifacts }}</td><td>{{ run.requested_by|default:"Scheduler" }}</td></tr>{% empty %}<tr><td colspan="6" class="empty">No report runs yet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}
