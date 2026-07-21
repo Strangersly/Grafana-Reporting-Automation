@@ -1,5 +1,6 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from threading import get_ident
 from unittest.mock import MagicMock, patch
 
 from cryptography.fernet import Fernet
@@ -51,6 +52,36 @@ class ReportTaskTests(TestCase):
             self.assertEqual(artifact.status, ReportArtifact.Status.SUCCEEDED)
             self.assertEqual(artifact.size_bytes, 8)
             self.assertEqual(artifact.attempts, 1)
+
+    @patch("reporter.tasks.GrafanaCaptureSession")
+    def test_playwright_calls_run_on_one_dedicated_thread(self, session_class):
+        with TemporaryDirectory() as temp_dir, override_settings(REPORT_ROOT=Path(temp_dir)):
+            run = self.make_run()
+            manager = session_class.return_value
+            session = manager.__enter__.return_value
+            capture_thread_ids = []
+
+            def record_enter_thread():
+                capture_thread_ids.append(get_ident())
+                return session
+
+            def write_png(dashboard, period, output_path):
+                capture_thread_ids.append(get_ident())
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                output_path.write_bytes(b"png-data")
+
+            def record_exit_thread(*args):
+                capture_thread_ids.append(get_ident())
+
+            manager.__enter__.side_effect = record_enter_thread
+            manager.__exit__.side_effect = record_exit_thread
+            session.capture.side_effect = write_png
+            orm_thread_id = get_ident()
+
+            execute_report_run(str(run.pk))
+
+            self.assertEqual(len(set(capture_thread_ids)), 1)
+            self.assertNotEqual(capture_thread_ids[0], orm_thread_id)
 
     @patch("reporter.tasks.GrafanaCaptureSession")
     def test_transient_capture_failure_retries_three_times(self, session_class):

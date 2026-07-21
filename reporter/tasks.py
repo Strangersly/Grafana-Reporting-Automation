@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone as datetime_timezone
 from zoneinfo import ZoneInfo
 
@@ -27,6 +29,37 @@ from .services import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class _ThreadedGrafanaCaptureSession:
+    """Keep Playwright's asyncio loop away from Django's synchronous ORM thread."""
+
+    def __init__(self, config: dict):
+        self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="grafana-capture")
+        self._manager = GrafanaCaptureSession(config)
+        self._session = None
+
+    def __enter__(self) -> "_ThreadedGrafanaCaptureSession":
+        try:
+            self._session = self._executor.submit(self._manager.__enter__).result()
+            return self
+        except Exception:
+            try:
+                self._executor.submit(self._manager.__exit__, *sys.exc_info()).result()
+            except Exception:
+                pass
+            finally:
+                self._executor.shutdown(wait=True)
+            raise
+
+    def __exit__(self, exc_type, exc, traceback) -> None:
+        try:
+            self._executor.submit(self._manager.__exit__, exc_type, exc, traceback).result()
+        finally:
+            self._executor.shutdown(wait=True)
+
+    def capture(self, dashboard: dict, period: Period, output_path) -> None:
+        self._executor.submit(self._session.capture, dashboard, period, output_path).result()
 
 
 def _refresh_counts(run: ReportRun) -> None:
@@ -82,7 +115,7 @@ def execute_report_run(run_id: str) -> None:
 
     authentication_error = ""
     try:
-        with GrafanaCaptureSession(connection_config(connection, include_credentials=True)) as session:
+        with _ThreadedGrafanaCaptureSession(connection_config(connection, include_credentials=True)) as session:
             for artifact in run.artifacts.filter(status=ReportArtifact.Status.PENDING).iterator():
                 run.refresh_from_db(fields=["cancel_requested"])
                 if run.cancel_requested:
