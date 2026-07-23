@@ -109,3 +109,19 @@ class ReportTaskTests(TestCase):
             self.assertEqual(run.status, ReportRun.Status.FAILED)
             self.assertEqual(artifact.attempts, 1)
             self.assertFalse((Path(temp_dir) / artifact.relative_path).exists())
+
+    @patch("reporter.tasks.GrafanaCaptureSession")
+    def test_session_startup_failure_has_clear_artifact_error(self, session_class):
+        run = self.make_run()
+        session_class.return_value.__enter__.side_effect = GrafanaCaptureError(
+            "Grafana login page timed out after 3 attempts."
+        )
+
+        execute_report_run(str(run.pk))
+
+        run.refresh_from_db()
+        artifact = run.artifacts.get()
+        self.assertEqual(run.status, ReportRun.Status.FAILED)
+        self.assertEqual(run.summary, "Grafana login page timed out after 3 attempts.")
+        self.assertEqual(artifact.error, run.summary)
+        self.assertEqual(artifact.attempts, 0)

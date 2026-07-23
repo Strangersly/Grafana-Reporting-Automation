@@ -34,6 +34,23 @@ def _wait_for_quiet(page: Any, timeout_seconds: int) -> None:
         page.wait_for_timeout(1500)
 
 
+def _navigate_with_retries(page: Any, url: str, *, timeout_seconds: int, description: str) -> None:
+    try:
+        from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+    except ImportError as exc:
+        raise GrafanaCaptureError("Playwright is not installed.") from exc
+
+    for attempt in range(1, 4):
+        try:
+            page.goto(url, wait_until="domcontentloaded", timeout=timeout_seconds * 1000)
+            return
+        except PlaywrightTimeoutError as exc:
+            if attempt == 3:
+                raise GrafanaCaptureError(f"{description} timed out after 3 attempts.") from exc
+            logging.warning("%s timed out; retrying attempt %s of 3", description, attempt + 1)
+            page.wait_for_timeout((2**attempt) * 1000)
+
+
 def _is_login_page(page: Any) -> bool:
     try:
         if urlparse(page.url).path.rstrip("/").endswith("/login"):
@@ -107,7 +124,12 @@ class GrafanaCaptureSession:
             raise GrafanaAuthenticationError("Grafana credentials are not configured.")
         timeout = int(grafana.get("navigation_timeout_seconds", 90))
         login_url = urljoin(grafana["base_url"].rstrip("/") + "/", grafana.get("login_path", "/login").lstrip("/"))
-        self.page.goto(login_url, wait_until="domcontentloaded", timeout=timeout * 1000)
+        _navigate_with_retries(
+            self.page,
+            login_url,
+            timeout_seconds=timeout,
+            description="Grafana login page",
+        )
         _wait_for_quiet(self.page, timeout)
         username_input = _first_visible(
             self.page,

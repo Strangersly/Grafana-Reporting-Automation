@@ -114,6 +114,7 @@ def execute_report_run(run_id: str) -> None:
         return
 
     authentication_error = ""
+    startup_error = ""
     try:
         with _ThreadedGrafanaCaptureSession(connection_config(connection, include_credentials=True)) as session:
             for artifact in run.artifacts.filter(status=ReportArtifact.Status.PENDING).iterator():
@@ -165,6 +166,13 @@ def execute_report_run(run_id: str) -> None:
             error=authentication_error,
             finished_at=timezone.now(),
         )
+    except GrafanaCaptureError as exc:
+        startup_error = str(exc)
+        run.artifacts.filter(status__in=[ReportArtifact.Status.PENDING, ReportArtifact.Status.CAPTURING]).update(
+            status=ReportArtifact.Status.FAILED,
+            error=startup_error,
+            finished_at=timezone.now(),
+        )
     except Exception as exc:
         logger.exception("Report run %s crashed", run.id)
         run.artifacts.filter(status__in=[ReportArtifact.Status.PENDING, ReportArtifact.Status.CAPTURING]).update(
@@ -191,7 +199,7 @@ def execute_report_run(run_id: str) -> None:
             run.summary = f"Captured {run.completed_artifacts}; failed {run.failed_artifacts}."
         else:
             run.status = ReportRun.Status.FAILED
-            run.summary = authentication_error or f"All {run.failed_artifacts} screenshots failed."
+            run.summary = authentication_error or startup_error or f"All {run.failed_artifacts} screenshots failed."
     run.finished_at = timezone.now()
     run.save(update_fields=["status", "summary", "finished_at"])
     if run.status in {ReportRun.Status.PARTIAL, ReportRun.Status.FAILED}:
