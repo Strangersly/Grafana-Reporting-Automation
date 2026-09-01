@@ -427,7 +427,7 @@
       "name": "ayodya",
       "site": "OCI Pelindo",
       "group": "DB",
-      "category": "Ayodya",
+      "category": "DB Oracle - DB Pelindo",
       "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=ayodya&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
       "viewport": {
         "height": 630
@@ -436,7 +436,7 @@
     {
       "name": "dlake edge",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-edge&var-interval=1h",
       "viewport": {
@@ -446,7 +446,7 @@
     {
       "name": "dlake mstr",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-mstr&var-interval=1h",
       "viewport": {
@@ -456,7 +456,7 @@
     {
       "name": "dlake repo",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-repo&var-interval=1h",
       "viewport": {
@@ -466,7 +466,7 @@
     {
       "name": "dlake util",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-util&var-interval=1h",
       "viewport": {
@@ -476,7 +476,7 @@
     {
       "name": "dlake wkr",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dlake-wkr&var-interval=1h",
       "viewport": {
@@ -486,7 +486,7 @@
     {
       "name": "dns server",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=dns-serve&var-interval=1h",
       "viewport": {
@@ -496,7 +496,7 @@
     {
       "name": "freeipa",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=freeipa&var-interval=1h",
       "viewport": {
@@ -506,7 +506,7 @@
     {
       "name": "strm kfk",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-kfk&var-interval=1h",
       "viewport": {
@@ -516,7 +516,7 @@
     {
       "name": "strm mstr",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-mstr&var-interval=1h",
       "viewport": {
@@ -526,7 +526,7 @@
     {
       "name": "strm nf",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-nf&var-interval=1h",
       "viewport": {
@@ -536,7 +536,7 @@
     {
       "name": "strm util",
       "site": "OCI Pelindo",
-      "group": "DB",
+      "group": "APP",
       "category": "Cloudera",
       "url": "/d/be954464vl2pse/vm-cloudera?var-instance_name=strm-util&var-interval=1h",
       "viewport": {
@@ -567,7 +567,7 @@
       "name": "hastina",
       "site": "OCI Pelindo",
       "group": "DB",
-      "category": "Hastina",
+      "category": "DB Oracle - DB Pelindo",
       "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=hastina&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
       "viewport": {
         "height": 635
@@ -577,7 +577,7 @@
       "name": "madra",
       "site": "OCI Pelindo",
       "group": "DB",
-      "category": "Madra",
+      "category": "DB Oracle - DB Pelindo",
       "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=madra&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
       "viewport": {
         "height": 635
@@ -609,6 +609,16 @@
       "group": "DB",
       "category": "DB Oracle - DB Pelindo",
       "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-interval=1h&timezone=browser&var-db_name=alengka&var-compartment=pelindo+%3E+DB-Pelindo-HO",
+      "viewport": {
+        "height": 635
+      }
+    },
+    {
+      "name": "dev",
+      "site": "OCI Pelindo",
+      "group": "DB",
+      "category": "DB Oracle - DB Pelindo",
+      "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=dev&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
       "viewport": {
         "height": 635
       }
@@ -805,9 +815,10 @@
     },
     {
       "name": "All",
-      "site": "SLA",
-      "group": "OCI",
+      "site": "OCI Pelindo",
+      "group": "DB",
       "category": "DB Oracle - DB Pelindo",
+      "enabled": false,
       "url": "/d/y3gun4vh5ycefng78/db-oracle-db-pelindo?var-db_name=All&var-interval=1h&var-compartment=pelindo+%3E+DB-Pelindo-HO",
       "viewport": {
         "height": 636

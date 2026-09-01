@@ -137,9 +137,11 @@ class ManualRunForm(forms.Form):
     from_date = forms.DateField(required=False, widget=forms.DateInput(attrs={"type": "date"}))
     to_date = forms.DateField(required=False, widget=forms.DateInput(attrs={"type": "date"}))
     filename = forms.CharField(max_length=255, required=False, help_text="Optional for custom ranges, for example week1.png.")
-    all_dashboards = forms.BooleanField(required=False, initial=True)
+    all_dashboards = forms.BooleanField(required=False, initial=True, widget=forms.CheckboxInput(attrs={"data-run-all": ""}))
     dashboards = forms.ModelMultipleChoiceField(
-        queryset=Dashboard.objects.none(), required=False, widget=forms.SelectMultiple(attrs={"size": 14})
+        queryset=Dashboard.objects.none(),
+        required=False,
+        widget=forms.SelectMultiple(attrs={"size": 14, "data-run-dashboards": ""}),
     )
 
     def __init__(self, *args, **kwargs):

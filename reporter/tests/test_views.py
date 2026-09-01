@@ -2,6 +2,7 @@ import json
 from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from cryptography.fernet import Fernet
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -106,6 +107,26 @@ class WebViewTests(TestCase):
         self.client.force_login(self.viewer)
         response = self.client.get(reverse("run_status", args=[run.pk]))
         self.assertEqual(response.json()["total"], 1)
+
+    @patch("reporter.views.execute_report_run.delay")
+    def test_operator_can_queue_one_selected_dashboard(self, mocked_delay):
+        self.client.force_login(self.operator)
+        response = self.client.post(
+            reverse("run_create"),
+            {
+                "mode": "custom",
+                "from_date": "2026-07-13",
+                "to_date": "2026-07-19",
+                "filename": "week2.png",
+                "dashboards": [self.dashboard.pk],
+            },
+        )
+
+        run = ReportRun.objects.get()
+        self.assertRedirects(response, reverse("run_detail", args=[run.pk]))
+        self.assertEqual(run.total_artifacts, 1)
+        self.assertEqual(run.artifacts.get().dashboard, self.dashboard)
+        mocked_delay.assert_called_once_with(str(run.pk))
 
     def test_authenticated_pages_render(self):
         periods = manual_periods(mode="monthly", year=2026, month=7)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
@@ -14,6 +15,17 @@ class GrafanaAuthenticationError(RuntimeError):
 
 class GrafanaCaptureError(RuntimeError):
     pass
+
+
+PANEL_SURFACE_SELECTOR = (
+    ".panel-container, [data-testid='panel-container'], "
+    "[data-testid='data-testid panel content'], [data-testid^='data-testid Panel header ']"
+)
+LOADING_INDICATOR_SELECTORS = [
+    "button:has-text('Cancel')",
+    "[data-testid*='loading' i]",
+    "[data-testid*='spinner' i]",
+]
 
 
 def _first_visible(page: Any, selectors: list[str]) -> Any | None:
@@ -32,6 +44,36 @@ def _wait_for_quiet(page: Any, timeout_seconds: int) -> None:
         page.wait_for_load_state("networkidle", timeout=min(timeout_seconds, 10) * 1000)
     except Exception:
         page.wait_for_timeout(1500)
+
+
+def _dashboard_is_ready(page: Any, wait_selector: str) -> bool:
+    """Grafana renders panel shells before its queries have completed."""
+    if _first_visible(page, [wait_selector]) is None:
+        return False
+    if _first_visible(page, [PANEL_SURFACE_SELECTOR]) is None:
+        return False
+    return _first_visible(page, LOADING_INDICATOR_SELECTORS) is None
+
+
+def _wait_for_dashboard_ready(
+    page: Any,
+    *,
+    wait_selector: str,
+    timeout_seconds: int,
+    settle_seconds: int,
+    dashboard_name: str,
+) -> None:
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        if _dashboard_is_ready(page, wait_selector):
+            if settle_seconds:
+                page.wait_for_timeout(settle_seconds * 1000)
+            if _dashboard_is_ready(page, wait_selector):
+                return
+        page.wait_for_timeout(500)
+    raise GrafanaCaptureError(
+        f"Dashboard did not finish rendering within {timeout_seconds} seconds: {dashboard_name}"
+    )
 
 
 def _navigate_with_retries(page: Any, url: str, *, timeout_seconds: int, description: str) -> None:
@@ -164,18 +206,21 @@ class GrafanaCaptureSession:
             _wait_for_quiet(self.page, timeout)
             if _is_login_page(self.page):
                 raise GrafanaAuthenticationError("Grafana redirected the report to the login page.")
-            selector = dashboard.get("wait_for_selector") or grafana.get("wait_for_selector")
-            if selector:
-                try:
-                    self.page.locator(selector).first.wait_for(state="visible", timeout=panel_timeout * 1000)
-                except Exception:
-                    logging.warning("Dashboard panels did not become visible for %s", dashboard["name"])
-            self.page.wait_for_timeout(int(float(grafana.get("wait_seconds", 8)) * 1000))
+            selector = dashboard.get("wait_for_selector") or grafana.get("wait_for_selector") or PANEL_SURFACE_SELECTOR
+            _wait_for_dashboard_ready(
+                self.page,
+                wait_selector=selector,
+                timeout_seconds=panel_timeout,
+                settle_seconds=int(float(grafana.get("wait_seconds", 8))),
+                dashboard_name=dashboard["name"],
+            )
             if _is_login_page(self.page):
                 raise GrafanaAuthenticationError("Grafana session expired before the screenshot was saved.")
             output_path.parent.mkdir(parents=True, exist_ok=True)
             self.page.screenshot(path=str(output_path), full_page=bool(grafana.get("full_page", True)))
         except GrafanaAuthenticationError:
+            raise
+        except GrafanaCaptureError:
             raise
         except Exception as exc:
             raise GrafanaCaptureError(f"Capture failed for {dashboard['name']}: {type(exc).__name__}") from exc

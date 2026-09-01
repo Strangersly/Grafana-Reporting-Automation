@@ -14,6 +14,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const runForm = document.querySelector("[data-run-form]");
+  if (runForm) {
+    const allDashboards = runForm.querySelector("[data-run-all]");
+    const selectedDashboards = runForm.querySelector("[data-run-dashboards]");
+    if (allDashboards && selectedDashboards) {
+      selectedDashboards.addEventListener("change", () => {
+        if (Array.from(selectedDashboards.options).some((option) => option.selected)) {
+          allDashboards.checked = false;
+        }
+      });
+      allDashboards.addEventListener("change", () => {
+        if (allDashboards.checked) {
+          Array.from(selectedDashboards.options).forEach((option) => {
+            option.selected = false;
+          });
+        }
+      });
+    }
+  }
+
   const summary = document.querySelector("[data-run-status-url]");
   if (summary && summary.dataset.running === "true") {
     const poll = async () => {
