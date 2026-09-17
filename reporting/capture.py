@@ -25,6 +25,23 @@ LOADING_INDICATOR_SELECTORS = [
     "button:has-text('Cancel')",
     "[data-testid*='loading' i]",
     "[data-testid*='spinner' i]",
+    "[role='progressbar']",
+    "[aria-label*='loading' i]",
+    ".fa-spinner, .fa-spin",
+    "[class*='spinner' i], [class*='loading' i]",
+]
+LOGIN_USERNAME_SELECTORS = [
+    "input[name='user']",
+    "input[name='username']",
+    "input[autocomplete='username']",
+    "input[placeholder='email or username']",
+    "input[type='email']",
+]
+LOGIN_PASSWORD_SELECTORS = [
+    "input[name='password']",
+    "input[autocomplete='current-password']",
+    "input[placeholder='password']",
+    "input[type='password']",
 ]
 
 
@@ -36,6 +53,16 @@ def _first_visible(page: Any, selectors: list[str]) -> Any | None:
                 return locator.first
         except Exception:
             continue
+    return None
+
+
+def _wait_for_first_visible(page: Any, selectors: list[str], timeout_seconds: int) -> Any | None:
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        locator = _first_visible(page, selectors)
+        if locator is not None:
+            return locator
+        page.wait_for_timeout(250)
     return None
 
 
@@ -76,6 +103,20 @@ def _wait_for_dashboard_ready(
     )
 
 
+def _dashboard_capture_height(page: Any, fallback_height: int) -> int:
+    """Capture through the bottom of rendered panels, not Grafana's inflated document height."""
+    try:
+        panel_bottom = page.locator(PANEL_SURFACE_SELECTOR).evaluate_all(
+            """(panels) => Math.ceil(Math.max(0, ...panels.map((panel) => {
+                const box = panel.getBoundingClientRect();
+                return box.width > 0 && box.height > 0 ? box.bottom + window.scrollY : 0;
+            })))"""
+        )
+        return max(fallback_height, int(panel_bottom) + 24)
+    except Exception:
+        return fallback_height
+
+
 def _navigate_with_retries(page: Any, url: str, *, timeout_seconds: int, description: str) -> None:
     try:
         from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
@@ -99,25 +140,8 @@ def _is_login_page(page: Any) -> bool:
             return True
     except Exception:
         pass
-    username = _first_visible(
-        page,
-        [
-            "input[name='user']",
-            "input[name='username']",
-            "input[autocomplete='username']",
-            "input[placeholder='email or username']",
-            "input[type='email']",
-        ],
-    )
-    password = _first_visible(
-        page,
-        [
-            "input[name='password']",
-            "input[autocomplete='current-password']",
-            "input[placeholder='password']",
-            "input[type='password']",
-        ],
-    )
+    username = _first_visible(page, LOGIN_USERNAME_SELECTORS)
+    password = _first_visible(page, LOGIN_PASSWORD_SELECTORS)
     return username is not None and password is not None
 
 
@@ -137,7 +161,11 @@ class GrafanaCaptureSession:
             raise GrafanaCaptureError("Playwright is not installed.") from exc
         grafana = self.config["grafana"]
         self._playwright = sync_playwright().start()
-        self._browser = self._playwright.chromium.launch(headless=self.headless)
+        # Grafana is reachable directly; bypass any stale Windows proxy configured for Chromium.
+        self._browser = self._playwright.chromium.launch(
+            headless=self.headless,
+            args=["--no-proxy-server"],
+        )
         self._context = self._browser.new_context(
             viewport={
                 "width": int(grafana.get("viewport", {}).get("width", 1920)),
@@ -173,14 +201,8 @@ class GrafanaCaptureSession:
             description="Grafana login page",
         )
         _wait_for_quiet(self.page, timeout)
-        username_input = _first_visible(
-            self.page,
-            ["input[name='user']", "input[name='username']", "input[autocomplete='username']", "input[type='email']"],
-        )
-        password_input = _first_visible(
-            self.page,
-            ["input[name='password']", "input[autocomplete='current-password']", "input[type='password']"],
-        )
+        username_input = _wait_for_first_visible(self.page, LOGIN_USERNAME_SELECTORS, timeout)
+        password_input = _wait_for_first_visible(self.page, LOGIN_PASSWORD_SELECTORS, timeout)
         if not username_input or not password_input:
             if _is_login_page(self.page):
                 raise GrafanaAuthenticationError("Grafana login form could not be used.")
@@ -217,7 +239,18 @@ class GrafanaCaptureSession:
             if _is_login_page(self.page):
                 raise GrafanaAuthenticationError("Grafana session expired before the screenshot was saved.")
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            self.page.screenshot(path=str(output_path), full_page=bool(grafana.get("full_page", True)))
+            if grafana.get("full_page", True):
+                self.page.screenshot(path=str(output_path), full_page=True)
+            else:
+                self.page.screenshot(
+                    path=str(output_path),
+                    clip={
+                        "x": 0,
+                        "y": 0,
+                        "width": width,
+                        "height": _dashboard_capture_height(self.page, height),
+                    },
+                )
         except GrafanaAuthenticationError:
             raise
         except GrafanaCaptureError:

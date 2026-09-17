@@ -12,7 +12,7 @@
       "width": 3440,
       "height": 1220
     },
-    "full_page": true,
+    "full_page": false,
     "wait_seconds": 8,
     "ignore_https_errors": false
   },
@@ -164,6 +164,16 @@
       }
     },
     {
+      "name": "mgs-ai",
+      "site": "GCP",
+      "group": "MGS",
+      "category": "K8S-MGS",
+      "url": "/d/admql2r/k8s-mgs-ai?timezone=browser&var-datasource=cecpye14uwxkwc&var-cluster_name=cluster-mgs-ai&var-namespace=&var-container_name=&var-alignmentPeriod=grafana-auto",
+      "viewport": {
+        "height": 1050
+      }
+    },
+    {
       "name": "Cloud Armor - All",
       "site": "GCP",
       "group": "Network and Security",
@@ -179,8 +189,9 @@
       "group": "Network and Security",
       "category": "Interconnect",
       "url": "/d/eexfbo85ofwu8e/interconnect?refresh=1h&timezone=browser",
+      "wait_for_selector": "canvas",
       "viewport": {
-        "height": 370
+        "height": 780
       }
     },
     {
@@ -624,6 +635,116 @@
       }
     },
     {
+      "name": "Hastina DRC",
+      "site": "OCI Pelindo",
+      "group": "DB DRC",
+      "category": "Hastina",
+      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=hastina&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 895
+      }
+    },
+    {
+      "name": "Madra DRC",
+      "site": "OCI Pelindo",
+      "group": "DB DRC",
+      "category": "Madra",
+      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=madra&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 895
+      }
+    },
+    {
+      "name": "Ayodya DRC",
+      "site": "OCI Pelindo",
+      "group": "DB DRC",
+      "category": "Ayodya",
+      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=ayodya&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 895
+      }
+    },
+    {
+      "name": "Pancala DRC",
+      "site": "OCI Pelindo",
+      "group": "DB DRC",
+      "category": "Pancala",
+      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=pancala&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 895
+      }
+    },
+    {
+      "name": "Alengka DRC",
+      "site": "OCI Pelindo",
+      "group": "DB DRC",
+      "category": "Alengka",
+      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=alengka&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 895
+      }
+    },
+    {
+      "name": "Hastina DRC TMP",
+      "site": "OCI Pelindo",
+      "group": "TMP",
+      "category": "Hastina",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=hastina&var-instance=%24__all",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 755
+      }
+    },
+    {
+      "name": "Madra DRC TMP",
+      "site": "OCI Pelindo",
+      "group": "TMP",
+      "category": "Madra",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=madra&var-instance=%24__all",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 755
+      }
+    },
+    {
+      "name": "Pancala DRC TMP",
+      "site": "OCI Pelindo",
+      "group": "TMP",
+      "category": "Pancala",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=pancala&var-instance=%24__all",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 755
+      }
+    },
+    {
+      "name": "Ayodya DRC TMP",
+      "site": "OCI Pelindo",
+      "group": "TMP",
+      "category": "Ayodya",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=ayodya&var-instance=%24__all",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 755
+      }
+    },
+    {
+      "name": "Alengka DRC TMP",
+      "site": "OCI Pelindo",
+      "group": "TMP",
+      "category": "Alengka",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=alengka&var-instance=%24__all",
+      "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+      "viewport": {
+        "height": 755
+      }
+    },
+    {
       "name": "Phinnisi",
       "site": "OCI Pelindo",
       "group": "Phinnisi",
@@ -680,7 +801,7 @@
       "category": "CDN (Object Storage)",
       "url": "/d/MtZyHmbIk/content-delivery-network-cdn?var-DomainName=All&refresh=1h",
       "viewport": {
-        "height": 705
+        "height": 5000
       }
     },
     {

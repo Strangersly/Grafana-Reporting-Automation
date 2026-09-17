@@ -5,7 +5,14 @@ from unittest.mock import MagicMock, patch
 from django.test import SimpleTestCase
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-from reporting.capture import GrafanaCaptureError, GrafanaCaptureSession, _navigate_with_retries, _wait_for_dashboard_ready
+from reporting.capture import (
+    GrafanaCaptureError,
+    GrafanaCaptureSession,
+    _dashboard_capture_height,
+    _navigate_with_retries,
+    _wait_for_dashboard_ready,
+    _wait_for_first_visible,
+)
 from reporting.core import Period
 
 
@@ -28,6 +35,16 @@ class NavigationRetryTests(SimpleTestCase):
 
         self.assertEqual(page.goto.call_count, 3)
         self.assertEqual(page.wait_for_timeout.call_count, 2)
+
+    @patch("reporting.capture.time.monotonic", side_effect=[0, 0, 1])
+    @patch("reporting.capture._first_visible", side_effect=[None, object()])
+    def test_waits_for_delayed_login_field(self, first_visible, monotonic):
+        page = MagicMock()
+
+        result = _wait_for_first_visible(page, ["input[name='user']"], timeout_seconds=30)
+
+        self.assertIsNotNone(result)
+        page.wait_for_timeout.assert_called_once_with(250)
 
 
 class DashboardReadinessTests(SimpleTestCase):
@@ -66,6 +83,24 @@ class DashboardReadinessTests(SimpleTestCase):
             )
 
         page.wait_for_timeout.assert_called_once_with(500)
+
+
+class DashboardCaptureHeightTests(SimpleTestCase):
+    def test_uses_the_last_rendered_panel_bottom(self):
+        page = MagicMock()
+        page.locator.return_value.evaluate_all.return_value = 1210
+
+        height = _dashboard_capture_height(page, fallback_height=705)
+
+        self.assertEqual(height, 1234)
+
+    def test_falls_back_to_configured_height_when_panel_measurement_fails(self):
+        page = MagicMock()
+        page.locator.return_value.evaluate_all.side_effect = RuntimeError("measurement failed")
+
+        height = _dashboard_capture_height(page, fallback_height=705)
+
+        self.assertEqual(height, 705)
 
 
 class CaptureErrorTests(SimpleTestCase):

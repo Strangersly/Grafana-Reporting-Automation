@@ -51,5 +51,16 @@ class ReportingCoreTests(SimpleTestCase):
         path = output_relative_path_for(self.config, self.dashboard, period)
         self.assertEqual(path.as_posix(), "2026/7. Juli/Alibaba/Centralized/VM-Linux/server-01/monthly.png")
 
+    def test_monthly_url_can_override_a_dashboard_interval(self):
+        dashboard = {
+            **self.dashboard,
+            "url": "/d/uid/linux?var-interval=1m",
+            "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
+        }
+        monthly, weekly = build_periods("all", 2026, 8, self.tz)[-1], build_periods("all", 2026, 8, self.tz)[0]
+
+        self.assertIn("var-interval=1h", build_dashboard_url(self.config, dashboard, monthly))
+        self.assertIn("var-interval=1m", build_dashboard_url(self.config, dashboard, weekly))
+
     def test_safe_path_part_removes_reserved_characters(self):
         self.assertEqual(safe_path_part('bad:name? '), "bad_name_")

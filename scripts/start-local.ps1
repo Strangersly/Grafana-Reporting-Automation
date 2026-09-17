@@ -12,6 +12,24 @@ $runtimeRoot = Join-Path $projectRoot ".runtime"
 $python = Join-Path $projectRoot ".venv\Scripts\python.exe"
 $celery = Join-Path $projectRoot ".venv\Scripts\celery.exe"
 $healthUrl = "http://127.0.0.1:8000/health/"
+$ignoredProxyVariables = @{}
+
+function Remove-InvalidLoopbackProxy {
+    # Codex and some terminal tools inject this unavailable local proxy. Do not pass it to workers.
+    foreach ($name in @("ALL_PROXY", "HTTP_PROXY", "HTTPS_PROXY")) {
+        $value = [Environment]::GetEnvironmentVariable($name, "Process")
+        if ($value -match "^https?://(127\.0\.0\.1|localhost):9/?$") {
+            $script:ignoredProxyVariables[$name] = $value
+            [Environment]::SetEnvironmentVariable($name, $null, "Process")
+        }
+    }
+}
+
+function Restore-InvalidLoopbackProxy {
+    foreach ($entry in $script:ignoredProxyVariables.GetEnumerator()) {
+        [Environment]::SetEnvironmentVariable($entry.Key, $entry.Value, "Process")
+    }
+}
 
 function Find-AppProcess {
     param(
@@ -65,6 +83,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $projectRoot ".env"))) {
 New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
 Push-Location $projectRoot
 try {
+    Remove-InvalidLoopbackProxy
     $keepalive = Find-AppProcess -Pattern "wsl.*sleep\s+infinity" -Names @("wsl.exe")
     if (-not $keepalive) {
         $keepalive = Start-Process -FilePath "wsl.exe" `
@@ -164,5 +183,6 @@ try {
     }
 }
 finally {
+    Restore-InvalidLoopbackProxy
     Pop-Location
 }

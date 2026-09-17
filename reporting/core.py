@@ -143,6 +143,18 @@ def _set_query_param(pairs: list[tuple[str, str]], key: str, value: Any) -> list
     return [(k, v) for k, v in pairs if k != key] + [(key, str(value))]
 
 
+def _report_query_params(dashboard: dict[str, Any], report_type: str) -> dict[str, Any]:
+    """Return dashboard URL parameters, including a report-type-specific override."""
+    configured = dashboard.get("query_params", {})
+    if not isinstance(configured, dict):
+        return {}
+    params = {key: value for key, value in configured.items() if key != "report_overrides"}
+    overrides = configured.get("report_overrides", {})
+    if isinstance(overrides, dict) and isinstance(overrides.get(report_type), dict):
+        params.update(overrides[report_type])
+    return params
+
+
 def build_dashboard_url(config: dict[str, Any], dashboard: dict[str, Any], period: Period) -> str:
     grafana = config["grafana"]
     raw_url = dashboard["url"]
@@ -159,6 +171,6 @@ def build_dashboard_url(config: dict[str, Any], dashboard: dict[str, Any], perio
         pairs = _set_query_param(pairs, "orgId", grafana["org_id"])
     if grafana.get("kiosk"):
         pairs = _set_query_param(pairs, "kiosk", "tv")
-    for key, value in dashboard.get("query_params", {}).items():
+    for key, value in _report_query_params(dashboard, period.report_type).items():
         pairs = _set_query_param(pairs, key, value)
     return urlunparse(parsed._replace(query=urlencode(pairs)))
