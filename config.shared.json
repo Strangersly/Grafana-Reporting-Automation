@@ -790,6 +790,17 @@
       "group": "Portaverse",
       "category": "Bandwidth",
       "url": "/d/id-huawei-201/vpc-vpn-and-bandwidth?refresh=1h",
+      "query_params": {
+        "capture_options": {
+          "wait_for_panel_loaders": false,
+          "skip_panel_readiness": true,
+          "settle_seconds": 15,
+          "expand_rows": [
+            "Bandwidth Overview"
+          ],
+          "full_page": true
+        }
+      },
       "viewport": {
         "height": 540
       }

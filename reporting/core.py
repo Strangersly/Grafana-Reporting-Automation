@@ -148,7 +148,11 @@ def _report_query_params(dashboard: dict[str, Any], report_type: str) -> dict[st
     configured = dashboard.get("query_params", {})
     if not isinstance(configured, dict):
         return {}
-    params = {key: value for key, value in configured.items() if key != "report_overrides"}
+    params = {
+        key: value
+        for key, value in configured.items()
+        if key not in {"report_overrides", "capture_options"}
+    }
     overrides = configured.get("report_overrides", {})
     if isinstance(overrides, dict) and isinstance(overrides.get(report_type), dict):
         params.update(overrides[report_type])

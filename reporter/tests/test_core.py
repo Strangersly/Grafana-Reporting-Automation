@@ -62,5 +62,14 @@ class ReportingCoreTests(SimpleTestCase):
         self.assertIn("var-interval=1h", build_dashboard_url(self.config, dashboard, monthly))
         self.assertIn("var-interval=1m", build_dashboard_url(self.config, dashboard, weekly))
 
+    def test_capture_options_are_not_sent_to_grafana(self):
+        dashboard = {
+            **self.dashboard,
+            "query_params": {"capture_options": {"wait_for_panel_loaders": False}},
+        }
+        period = build_periods("monthly", 2026, 8, self.tz)[0]
+
+        self.assertNotIn("capture_options", build_dashboard_url(self.config, dashboard, period))
+
     def test_safe_path_part_removes_reserved_characters(self):
         self.assertEqual(safe_path_part('bad:name? '), "bad_name_")

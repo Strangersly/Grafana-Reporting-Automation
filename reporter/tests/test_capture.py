@@ -6,9 +6,12 @@ from django.test import SimpleTestCase
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from reporting.capture import (
+    LOADING_INDICATOR_SELECTORS,
     GrafanaCaptureError,
     GrafanaCaptureSession,
+    _expand_dashboard_rows,
     _dashboard_capture_height,
+    _dashboard_is_ready,
     _navigate_with_retries,
     _wait_for_dashboard_ready,
     _wait_for_first_visible,
@@ -48,12 +51,47 @@ class NavigationRetryTests(SimpleTestCase):
 
 
 class DashboardReadinessTests(SimpleTestCase):
+    def test_does_not_treat_arbitrary_loading_css_classes_as_a_loader(self):
+        self.assertNotIn("[class*='spinner' i], [class*='loading' i]", LOADING_INDICATOR_SELECTORS)
+
+    @patch("reporting.capture._first_visible")
+    def test_ignores_a_global_grafana_loading_control(self, first_visible):
+        page = MagicMock()
+        ready = object()
+        toolbar_loader = MagicMock()
+        toolbar_loader.evaluate.return_value = False
+        first_visible.side_effect = [ready, ready, toolbar_loader, None, None, None, None, None]
+
+        self.assertTrue(_dashboard_is_ready(page, ".panel-container"))
+
+    @patch("reporting.capture._first_visible")
+    def test_blocks_a_loader_inside_a_panel(self, first_visible):
+        page = MagicMock()
+        ready = object()
+        panel_loader = MagicMock()
+        panel_loader.evaluate.return_value = True
+        first_visible.side_effect = [ready, ready, panel_loader]
+
+        self.assertFalse(_dashboard_is_ready(page, ".panel-container"))
+
+    @patch("reporting.capture._has_visible_panel_loader", return_value=True)
+    @patch("reporting.capture._first_visible", return_value=object())
+    def test_can_capture_a_dashboard_with_persistent_background_loading(self, first_visible, has_loader):
+        self.assertTrue(
+            _dashboard_is_ready(
+                MagicMock(),
+                ".panel-container",
+                wait_for_panel_loaders=False,
+            )
+        )
+        has_loader.assert_not_called()
+
     @patch("reporting.capture.time.monotonic", side_effect=[0, 0])
     @patch("reporting.capture._first_visible")
     def test_waits_for_ready_panels_to_remain_stable(self, first_visible, monotonic):
         page = MagicMock()
         ready = object()
-        first_visible.side_effect = [ready, ready, None, ready, ready, None]
+        first_visible.side_effect = [ready, ready, *([None] * 6), ready, ready, *([None] * 6)]
 
         _wait_for_dashboard_ready(
             page,
@@ -85,6 +123,19 @@ class DashboardReadinessTests(SimpleTestCase):
         page.wait_for_timeout.assert_called_once_with(500)
 
 
+class DashboardRowTests(SimpleTestCase):
+    def test_expands_configured_collapsed_rows(self):
+        page = MagicMock()
+        row = page.get_by_text.return_value.first
+        row.is_visible.return_value = True
+
+        _expand_dashboard_rows(page, ["Bandwidth Overview"])
+
+        page.get_by_text.assert_called_once_with("Bandwidth Overview", exact=False)
+        row.click.assert_called_once_with()
+        page.wait_for_timeout.assert_called_once_with(500)
+
+
 class DashboardCaptureHeightTests(SimpleTestCase):
     def test_uses_the_last_rendered_panel_bottom(self):
         page = MagicMock()
@@ -104,6 +155,52 @@ class DashboardCaptureHeightTests(SimpleTestCase):
 
 
 class CaptureErrorTests(SimpleTestCase):
+    @patch("reporting.capture._wait_for_dashboard_ready")
+    @patch("reporting.capture._wait_for_quiet")
+    @patch("reporting.capture._is_login_page", return_value=False)
+    def test_capture_can_use_a_dashboard_specific_settle_delay(self, login_page, wait_for_quiet, wait_for_dashboard_ready):
+        session = GrafanaCaptureSession(
+            {
+                "grafana": {
+                    "base_url": "https://grafana.example.com",
+                    "navigation_timeout_seconds": 90,
+                    "panel_timeout_seconds": 60,
+                    "wait_seconds": 8,
+                    "viewport": {"width": 1920, "height": 1080},
+                }
+            }
+        )
+        session.page = MagicMock()
+
+        session.capture(
+            {
+                "name": "Bandwidth",
+                "url": "/d/bandwidth",
+                "query_params": {
+                    "capture_options": {
+                        "skip_panel_readiness": True,
+                        "settle_seconds": 15,
+                        "expand_rows": ["Bandwidth Overview"],
+                        "full_page": True,
+                    }
+                },
+            },
+            Period(
+                "weekly",
+                "week2.png",
+                datetime(2026, 9, 8, tzinfo=timezone.utc),
+                datetime(2026, 9, 14, 23, 59, tzinfo=timezone.utc),
+                2026,
+                9,
+            ),
+            Path("unused.png"),
+        )
+
+        session.page.wait_for_timeout.assert_called_with(15_000)
+        session.page.get_by_text.assert_called_once_with("Bandwidth Overview", exact=False)
+        session.page.screenshot.assert_called_once_with(path="unused.png", full_page=True)
+        wait_for_dashboard_ready.assert_not_called()
+
     @patch("reporting.capture._wait_for_dashboard_ready")
     @patch("reporting.capture._wait_for_quiet")
     @patch("reporting.capture._is_login_page", return_value=False)

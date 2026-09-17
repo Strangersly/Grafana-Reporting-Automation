@@ -28,7 +28,6 @@ LOADING_INDICATOR_SELECTORS = [
     "[role='progressbar']",
     "[aria-label*='loading' i]",
     ".fa-spinner, .fa-spin",
-    "[class*='spinner' i], [class*='loading' i]",
 ]
 LOGIN_USERNAME_SELECTORS = [
     "input[name='user']",
@@ -73,13 +72,43 @@ def _wait_for_quiet(page: Any, timeout_seconds: int) -> None:
         page.wait_for_timeout(1500)
 
 
-def _dashboard_is_ready(page: Any, wait_selector: str) -> bool:
+def _expand_dashboard_rows(page: Any, row_names: list[str]) -> None:
+    """Open known collapsed Grafana rows before measuring or capturing a dashboard."""
+    for row_name in row_names:
+        try:
+            row = page.get_by_text(row_name, exact=False).first
+            if row.is_visible():
+                row.click()
+                page.wait_for_timeout(500)
+        except Exception:
+            logging.warning("Could not expand Grafana row %r", row_name)
+
+
+def _has_visible_panel_loader(page: Any) -> bool:
+    """Ignore Grafana toolbar activity; only panel-local loaders block capture."""
+    for selector in LOADING_INDICATOR_SELECTORS:
+        loader = _first_visible(page, [selector])
+        if loader is None:
+            continue
+        try:
+            if loader.evaluate(
+                "(element, panelSelector) => Boolean(element.closest(panelSelector))",
+                PANEL_SURFACE_SELECTOR,
+            ):
+                return True
+        except Exception:
+            # A detected loader that cannot be inspected is safer treated as active.
+            return True
+    return False
+
+
+def _dashboard_is_ready(page: Any, wait_selector: str, *, wait_for_panel_loaders: bool = True) -> bool:
     """Grafana renders panel shells before its queries have completed."""
     if _first_visible(page, [wait_selector]) is None:
         return False
     if _first_visible(page, [PANEL_SURFACE_SELECTOR]) is None:
         return False
-    return _first_visible(page, LOADING_INDICATOR_SELECTORS) is None
+    return not wait_for_panel_loaders or not _has_visible_panel_loader(page)
 
 
 def _wait_for_dashboard_ready(
@@ -89,13 +118,14 @@ def _wait_for_dashboard_ready(
     timeout_seconds: int,
     settle_seconds: int,
     dashboard_name: str,
+    wait_for_panel_loaders: bool = True,
 ) -> None:
     deadline = time.monotonic() + timeout_seconds
     while time.monotonic() < deadline:
-        if _dashboard_is_ready(page, wait_selector):
+        if _dashboard_is_ready(page, wait_selector, wait_for_panel_loaders=wait_for_panel_loaders):
             if settle_seconds:
                 page.wait_for_timeout(settle_seconds * 1000)
-            if _dashboard_is_ready(page, wait_selector):
+            if _dashboard_is_ready(page, wait_selector, wait_for_panel_loaders=wait_for_panel_loaders):
                 return
         page.wait_for_timeout(500)
     raise GrafanaCaptureError(
@@ -229,17 +259,30 @@ class GrafanaCaptureSession:
             if _is_login_page(self.page):
                 raise GrafanaAuthenticationError("Grafana redirected the report to the login page.")
             selector = dashboard.get("wait_for_selector") or grafana.get("wait_for_selector") or PANEL_SURFACE_SELECTOR
-            _wait_for_dashboard_ready(
-                self.page,
-                wait_selector=selector,
-                timeout_seconds=panel_timeout,
-                settle_seconds=int(float(grafana.get("wait_seconds", 8))),
-                dashboard_name=dashboard["name"],
+            raw_capture_options = dashboard.get("query_params", {}).get("capture_options", {})
+            capture_options = raw_capture_options if isinstance(raw_capture_options, dict) else {}
+            rows_to_expand = capture_options.get("expand_rows", [])
+            if isinstance(rows_to_expand, list):
+                _expand_dashboard_rows(self.page, [str(row) for row in rows_to_expand if str(row).strip()])
+            settle_seconds = int(
+                float(capture_options.get("settle_seconds", grafana.get("wait_seconds", 8)))
             )
+            if capture_options.get("skip_panel_readiness", False):
+                self.page.wait_for_timeout(settle_seconds * 1000)
+            else:
+                _wait_for_dashboard_ready(
+                    self.page,
+                    wait_selector=selector,
+                    timeout_seconds=panel_timeout,
+                    settle_seconds=settle_seconds,
+                    dashboard_name=dashboard["name"],
+                    wait_for_panel_loaders=bool(capture_options.get("wait_for_panel_loaders", True)),
+                )
             if _is_login_page(self.page):
                 raise GrafanaAuthenticationError("Grafana session expired before the screenshot was saved.")
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            if grafana.get("full_page", True):
+            full_page = bool(capture_options.get("full_page", grafana.get("full_page", True)))
+            if full_page:
                 self.page.screenshot(path=str(output_path), full_page=True)
             else:
                 self.page.screenshot(
