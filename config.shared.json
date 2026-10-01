@@ -118,7 +118,7 @@
       "site": "GCP",
       "group": "Back Office",
       "category": "VM",
-      "url": "/d/bey7rgxvk9b0ga/vm-windows?var-interval=1m&timezone=browser&var-prome_ds=eey4rwzgb9ibke&var-nodename=gcp-srvwpbios01&var-instance=10.174.3.6%3A9182",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvwpgatewaypowerbi01&var-alignmentPeriod=%2B3600s",
       "viewport": {
         "height": 615
       }
@@ -209,7 +209,7 @@
       "site": "GCP",
       "group": "QA",
       "category": "K8s QA",
-      "url": "/d/df07rysvmjx1cc/vm-linux?var-prome_ds=eey4rwzgb9ibke&var-job=node-exporter&var-nodename=gcp-srvlpprima01&var-instance=10.174.3.53%3A9100&var-interval=1h",
+      "url": "/d/8n45gbev55gnv3/k8s-qa?timezone=browser&var-datasource=cecpye14uwxkwc&var-cluster_name=qa-ho&var-namespace=&var-container_name=&var-alignmentPeriod=grafana-auto",
       "viewport": {
         "height": 490
       }
@@ -639,7 +639,7 @@
       "site": "OCI Pelindo",
       "group": "DB DRC",
       "category": "Hastina",
-      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=hastina&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=b-hastina&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 895
@@ -661,7 +661,7 @@
       "site": "OCI Pelindo",
       "group": "DB DRC",
       "category": "Ayodya",
-      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=ayodya&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=i-ayodya&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 895
@@ -672,7 +672,7 @@
       "site": "OCI Pelindo",
       "group": "DB DRC",
       "category": "Pancala",
-      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=pancala&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=i-pancala&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 895
@@ -683,7 +683,7 @@
       "site": "OCI Pelindo",
       "group": "DB DRC",
       "category": "Alengka",
-      "url": "/d/ad6tdzd/db-oracle-db-pelindo-drc?var-interval=1m&timezone=browser&var-db_name=alengka&var-compartment=pelindo%20%3E%20DB-Pelindo-HO",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=i-alengka&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 895
@@ -694,7 +694,7 @@
       "site": "OCI Pelindo",
       "group": "TMP",
       "category": "Hastina",
-      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=hastina&var-instance=%24__all",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=b-hastina&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 755
@@ -716,7 +716,7 @@
       "site": "OCI Pelindo",
       "group": "TMP",
       "category": "Pancala",
-      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=pancala&var-instance=%24__all",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=i-pancala&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 755
@@ -727,7 +727,7 @@
       "site": "OCI Pelindo",
       "group": "TMP",
       "category": "Ayodya",
-      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=ayodya&var-instance=%24__all",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=i-ayodya&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 755
@@ -738,7 +738,7 @@
       "site": "OCI Pelindo",
       "group": "TMP",
       "category": "Alengka",
-      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=alengka&var-instance=%24__all",
+      "url": "/d/adfpcfq/db-oracle-drc?var-interval=10m&timezone=browser&var-prome_ds=deyx07ukt7nk0e&var-db_name=i-alengka&var-instance=%24__all",
       "query_params": {"report_overrides": {"monthly": {"var-interval": "1h"}}},
       "viewport": {
         "height": 755
@@ -965,6 +965,23 @@
       "viewport": {
         "height": 640
       }
+    },
+    {
+      "name": "Eaudit",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/uvynm29tgf2tcf/vm-backoffice?var-datasource=cecpye14uwxkwc&var-project=pelindo-back-office&var-instance_name=gcp-srvwpeauditapp01&var-alignmentPeriod=%2B3600s&timezone=browser",
+      "viewport": {
+        "height": 780
+      }
+    },
+    {
+      "name": "Eaudit SQL",
+      "site": "GCP",
+      "group": "Back Office",
+      "category": "VM",
+      "url": "/d/adw2f5k/sql-backoffice-eaudit?timezone=browser&var-datasource=cecpye14uwxkwc&var-db_name=%24__all&var-alignmentPeriod=grafana-auto"
     }
   ]
 }
